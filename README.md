@@ -20,12 +20,21 @@ A canvas pinned to the screen plays the "how a remedy is made" film as you scrol
 4. Sealed for purity: amber bottle corked
 5. Made for you: globules poured onto a spoon
 
-**Right now** it cross-fades the 5 keyframes in `images/stage*.jpg` with a slow push-in.
+The film (8 s, generated in Google Veo from the 5 keyframes) is cut into WebP frames:
+- `images/seq/` — 190 frames at 1280 px for desktop (~4.2 MB)
+- `images/seq-m/` — 127 frames at 854 px for phones (~1.7 MB)
 
-**To switch to real video playback:**
-1. Make one continuous 10–15 s clip from the keyframes (Kling / Runway / Veo).
-2. Export ~150 frames at 1920×1080 as WebP: `ffmpeg -i film.mp4 -vf "fps=12,scale=1920:-1" -c:v libwebp -quality 70 images/seq/%04d.webp`
-3. In `index.html`, set `SEQUENCE.count` to the number of frames.
+The canvas draws the frame that matches the scroll position. In `index.html`:
+- `STAGE_AT` sets where each stage sits in the film (captions, rail and morph icon follow it)
+- `FOCUS` pans the frame on portrait screens so the bottle stays in view
+
+To replace the film: export new frames with
+`ffmpeg -i film.mp4 -an -vf "scale=1280:-2" -c:v libwebp -quality 72 images/seq/%04d.webp`
+(and `fps=16,scale=854:-2` for `seq-m`), then update the two counts in `SEQUENCE`.
+
+The keyframes in `images/stage*.jpg` remain as the no-JavaScript / reduced-motion fallback.
+
+**Note:** the film carries a small "Veo" watermark (bottom-right). To remove it, regenerate on a Veo plan that exports without the visible watermark.
 
 ## Images
 - `images/stage*.jpg`: storyboard keyframes (AI-generated in Figma, full resolution).

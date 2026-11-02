@@ -8,7 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600&family=Noto+Sans+Tamil:wght@500;600&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="images/stage1-flower.jpg">
+<link rel="preload" as="image" href="images/seq/0001.webp" media="(min-width:761px)">
+<link rel="preload" as="image" href="images/seq-m/0001.webp" media="(max-width:760px)">
 <style>
 :root{
   --g950:#041c10; --g900:#072a18; --g800:#0b3d23; --g700:#12542f; --brand:#1f9a46; --leaf:#3cb763;
@@ -341,7 +342,7 @@ html:not(.anim) .hcard{scroll-snap-align:start}
         <h2>Absorbed with care<em>.</em></h2>
         <p>Tiny white sugar globules are soaked with the prepared remedy, so it is gentle and easy to take.</p>
       </div>
-      <div class="cap cap-r" data-i="3">
+      <div class="cap cap-l" data-i="3">
         <span class="cap-num">04 <i></i> Sealed</span>
         <h2>Sealed for purity<em>.</em></h2>
         <p>Remedies are kept in amber glass, which protects them from light until they reach you.</p>
@@ -615,7 +616,15 @@ html:not(.anim) .hcard{scroll-snap-align:start}
      (e.g. 150) and drop them in images/seq/0001.webp … — the
      scroll scrub switches to true frame-by-frame playback.
      ============================================================ */
-  var SEQUENCE = { count: 0, src: function(i){ return 'images/seq/' + String(i+1).padStart(4,'0') + '.webp'; } };
+  var MOBILE = matchMedia('(max-width:760px)').matches;
+  var SEQUENCE = {
+    count: MOBILE ? 127 : 190,                                   // frames in images/seq-m / images/seq
+    src: function(i){ return (MOBILE ? 'images/seq-m/' : 'images/seq/') + String(i+1).padStart(4,'0') + '.webp'; }
+  };
+  /* where each of the 5 stages sits in the film (0–1) — captions, rail and morph icon follow these */
+  var STAGE_AT = [0.04, 0.33, 0.53, 0.72, 0.96];
+  /* portrait screens: horizontal focus (0–1) so the bottle stays in view when it moves right */
+  var FOCUS = [[0,.5],[.58,.5],[.656,.8],[.757,.74],[.845,.6],[.92,.55],[1,.55]];
 
   var $ = function(q){return document.querySelector(q)}, $$ = function(q){return Array.prototype.slice.call(document.querySelectorAll(q))};
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -655,10 +664,23 @@ html:not(.anim) .hcard{scroll-snap-align:start}
   /* ---------- canvas ---------- */
   var canvas = $('#film'), ctx = canvas.getContext('2d'), W=0, H=0, DPR=1;
   function size(){ DPR=Math.min(window.devicePixelRatio||1,2); W=canvas.clientWidth; H=canvas.clientHeight; canvas.width=W*DPR; canvas.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); render(); }
-  function cover(im, scale, alpha){
+  function focusAt(p){
+    for(var k=1;k<FOCUS.length;k++){ if(p<=FOCUS[k][0]){ var a=FOCUS[k-1], b=FOCUS[k], t=(p-a[0])/(b[0]-a[0]||1); return a[1]+(b[1]-a[1])*t; } }
+    return .5;
+  }
+  function cover(im, scale, alpha, fx){
     if(!im || !im.naturalWidth) return;
     var r=Math.max(W/im.naturalWidth, H/im.naturalHeight)*scale, w=im.naturalWidth*r, h=im.naturalHeight*r;
-    ctx.globalAlpha=alpha; ctx.drawImage(im,(W-w)/2,(H-h)/2,w,h); ctx.globalAlpha=1;
+    var x = fx==null ? (W-w)/2 : Math.min(0, Math.max(W-w, W/2 - w*fx));
+    ctx.globalAlpha=alpha; ctx.drawImage(im,x,(H-h)/2,w,h); ctx.globalAlpha=1;
+  }
+  function nearestLoaded(i){
+    for(var d=0; d<total; d++){
+      var a=frames[i-d], b=frames[i+d];
+      if(a && a.complete && a.naturalWidth) return a;
+      if(b && b.complete && b.naturalWidth) return b;
+    }
+    return null;
   }
   var state = { p: 0 };
   function smooth(x){ x=Math.min(1,Math.max(0,x)); return x*x*(3-2*x); }
@@ -666,7 +688,8 @@ html:not(.anim) .hcard{scroll-snap-align:start}
     if(!W) return;
     ctx.fillStyle='#041c10'; ctx.fillRect(0,0,W,H);
     if(SEQUENCE.count > 0){
-      cover(frames[Math.round(state.p*(total-1))], 1, 1);
+      var portrait = W/H < 1;
+      cover(nearestLoaded(Math.round(state.p*(total-1))), 1, 1, portrait ? focusAt(state.p) : null);
     } else {
       var seg = state.p*(total-1), i=Math.min(total-2, Math.floor(seg)), f=seg-i;
       if(state.p>=1){ i=total-2; f=1; }
@@ -690,7 +713,7 @@ html:not(.anim) .hcard{scroll-snap-align:start}
     var tl = gsap.timeline({ defaults:{ease:'none'}, scrollTrigger:{
       trigger:'.story', start:'top top', end:'+=' + (N*120) + '%', pin:true, scrub:0.8, anticipatePin:1,
       onUpdate:function(self){
-        var idx=Math.min(N-1, Math.round(self.progress*(N-1)));
+        var idx=0; for(var q=1;q<N;q++){ if(self.progress >= (STAGE_AT[q-1]+STAGE_AT[q])/2) idx=q; }
         rail.forEach(function(li,k){ li.classList.toggle('on', k===idx); });
       }
     }});
@@ -698,8 +721,9 @@ html:not(.anim) .hcard{scroll-snap-align:start}
       .to('#prog',{scaleX:1,duration:LEN},0)
       .to('#intro',{opacity:0,y:-60,duration:.7},0.15)
       .to('#hint',{opacity:0,duration:.3},0);
+    var mid=function(a,b){ return (STAGE_AT[a]+STAGE_AT[b])/2*LEN; };
     caps.forEach(function(c,k){
-      var centre = k*2.5, inAt = k===0 ? 0.75 : centre-0.85, outAt = centre+0.85;
+      var inAt = k===0 ? 0.75 : mid(k-1,k)+0.05, outAt = k<N-1 ? mid(k,k+1)-0.45 : LEN;
       var dx = c.classList.contains('cap-r') ? 40 : -40;
       tl.fromTo(c,{autoAlpha:0,x:dx},{autoAlpha:1,x:0,duration:.55,ease:'power2.out'},inAt);
       tl.fromTo(c.querySelector('h2'),{yPercent:30},{yPercent:0,duration:.55,ease:'power2.out'},inAt);
@@ -708,8 +732,8 @@ html:not(.anim) .hcard{scroll-snap-align:start}
     /* morphing stage icon: leaf → drop → globule → bottle → spoon */
     if(window.MorphSVGPlugin){
       for(var m=1;m<N;m++){
-        tl.to('#morph',{morphSVG:{shape:'#sh'+m,type:'rotational'},duration:.9,ease:'power2.inOut'},m*2.5-1.05);
-        tl.fromTo('.morph',{rotation:0,scale:1},{rotation:360,scale:1.15,duration:.9,ease:'power2.inOut',yoyo:false},m*2.5-1.05);
+        tl.to('#morph',{morphSVG:{shape:'#sh'+m,type:'rotational'},duration:.9,ease:'power2.inOut'},mid(m-1,m)-0.45);
+        tl.fromTo('.morph',{rotation:0,scale:1},{rotation:360,scale:1.15,duration:.9,ease:'power2.inOut'},mid(m-1,m)-0.45);
       }
     }
     tl.to({}, {duration:.6});     // hold the final frame

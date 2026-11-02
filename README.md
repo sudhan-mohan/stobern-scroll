@@ -25,7 +25,7 @@ A canvas pinned to the screen plays the "how a remedy is made" film as you scrol
 3. In `index.html`, set `SEQUENCE.count` to the number of frames.
 
 ## Images
-- `images/stage*.jpg`: storyboard keyframes (AI-generated in Figma). They are low-res placeholders until the full-resolution exports are added.
+- `images/stage*.jpg`: storyboard keyframes (AI-generated in Figma, full resolution).
 - `images/step*.jpg`, `images/clinic.jpg`: AI-generated stand-ins; replace with real photos of the doctor and clinic before launch.
 - `images/logo-white.png`, `images/logo-green.png`: client wordmark.
 

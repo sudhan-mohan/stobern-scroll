@@ -216,6 +216,19 @@ html:not(.anim) .loader{display:none}
 .stats strong{font-family:var(--serif);font-size:40px;color:var(--g800);font-weight:600;line-height:1}
 .stats span{display:block;margin-top:6px;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
 
+/* ===== morph icon ===== */
+.railwrap{display:none}
+.anim .story .railwrap{display:flex;flex-direction:column;align-items:flex-end;gap:22px;position:absolute;right:3vw;top:50%;transform:translateY(-50%)}
+.anim .story .railwrap .rail{position:static;transform:none}
+.morph{width:46px;height:46px;filter:drop-shadow(0 0 14px rgba(243,220,155,.55));margin-right:-8px}
+.morph path[id^=sh]{display:none}
+
+/* ===== thread + globule (MotionPath) ===== */
+.thread{display:none;position:absolute;left:0;top:0;width:100%;pointer-events:none;z-index:6}
+.thread svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.wp{fill:#f7f2e6;stroke:#c9973a;stroke-width:1.5;transition:fill .4s}
+.wp.on{fill:#e2bf6a}
+
 /* ===== horizontal journey ===== */
 .journey{background:var(--g800);color:#fff;position:relative;overflow:hidden}
 .journey .jhead{padding:110px 7vw 40px;display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap}
@@ -223,7 +236,15 @@ html:not(.anim) .loader{display:none}
 .journey h2{font-family:var(--serif);font-weight:500;font-size:clamp(38px,5vw,66px);line-height:1;margin-top:12px}
 .journey h2 em{color:var(--gold2)}
 .journey .jhead p{max-width:380px;opacity:.8;line-height:1.7}
-.htrack{display:flex;gap:28px;padding:0 7vw 110px;width:max-content}
+.jside{display:flex;flex-direction:column;gap:18px;align-items:flex-start}
+.sbtns{display:flex;gap:10px}
+.sbtn{width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-size:18px;cursor:pointer;transition:background .25s,color .25s}
+.sbtn:hover{background:var(--gold);color:var(--g900);border-color:var(--gold)}
+.slider{overflow:hidden;padding:0 0 110px;cursor:grab;touch-action:pan-y}
+.slider:active{cursor:grabbing}
+.htrack{display:flex;gap:28px;padding-left:7vw;width:max-content;will-change:transform}
+.hcard{user-select:none;-webkit-user-select:none}
+.hcard img{pointer-events:none}
 .hcard{width:min(440px,78vw);flex:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:26px;overflow:hidden}
 .hcard-img{aspect-ratio:4/3;overflow:hidden}
 .hcard-img img{width:100%;height:100%;object-fit:cover;transform:scale(1.08)}
@@ -231,7 +252,8 @@ html:not(.anim) .loader{display:none}
 .hnum{font-family:var(--serif);font-size:40px;color:var(--gold);line-height:1}
 .hcard h3{font-family:var(--serif);font-size:30px;font-weight:600;margin:6px 0 8px}
 .hcard p{font-size:14.5px;line-height:1.65;opacity:.8}
-html:not(.anim) .htrack{width:auto;overflow-x:auto;scroll-snap-type:x mandatory}
+html:not(.anim) .htrack{width:auto;overflow-x:auto;scroll-snap-type:x mandatory;padding-right:7vw}
+html:not(.anim) .hcard.dup,html:not(.anim) .sbtns{display:none}
 html:not(.anim) .hcard{scroll-snap-align:start}
 
 /* ===== responsive ===== */
@@ -250,7 +272,7 @@ html:not(.anim) .hcard{scroll-snap-align:start}
   .cap-r .cap-num{justify-content:flex-start}
   .cap h2{font-size:44px;margin:10px 0 10px}
   .cap p{font-size:14px}
-  .rail{right:auto;left:6vw;top:auto;bottom:5vh;transform:none;flex-direction:row;gap:10px}
+  .rail{flex-direction:row;gap:10px}
   .rail li span{display:none}
   .treat{grid-template-columns:1fr}
   section.block{padding:84px 6vw}
@@ -259,7 +281,10 @@ html:not(.anim) .hcard{scroll-snap-align:start}
   .cta-band{padding:34px 26px}
   .bridge{padding:96px 6vw 84px}
   .journey .jhead{padding:90px 6vw 30px}
-  .htrack{padding:0 6vw 90px;gap:16px}
+  .slider{padding-bottom:90px}
+  .htrack{padding-left:6vw;gap:16px}
+  .anim .story .railwrap{right:auto;left:6vw;top:auto;bottom:5vh;transform:none;flex-direction:row;align-items:center;gap:14px}
+  .morph{width:30px;height:30px;margin:0}
 }
 @media (prefers-reduced-motion:reduce){ .scroll-hint::after{animation:none} }
 </style>
@@ -327,13 +352,24 @@ html:not(.anim) .hcard{scroll-snap-align:start}
         <p>Your remedy and potency are chosen after a detailed case study, so treatment fits you, not just your symptoms.</p>
       </div>
   </div>
-  <ol class="rail" id="rail">
+  <div class="railwrap">
+    <svg class="morph" viewBox="0 0 48 48" aria-hidden="true">
+      <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6e2a4"/><stop offset="1" stop-color="#c9973a"/></linearGradient></defs>
+      <path id="morph" fill="url(#mg)" d="M24 4C34 12 38 22 34 32C31 39 27 43 24 44C21 43 17 39 14 32C10 22 14 12 24 4Z"/>
+      <path id="sh0" d="M24 4C34 12 38 22 34 32C31 39 27 43 24 44C21 43 17 39 14 32C10 22 14 12 24 4Z"/>
+      <path id="sh1" d="M24 4C24 4 38 20 38 30C38 38 31.7 44 24 44C16.3 44 10 38 10 30C10 20 24 4 24 4Z"/>
+      <path id="sh2" d="M24 10C31.7 10 38 16.3 38 24C38 31.7 31.7 38 24 38C16.3 38 10 31.7 10 24C10 16.3 16.3 10 24 10Z"/>
+      <path id="sh3" d="M19 4H29V10H28V13C33 14 36 17 36 22V40C36 42.2 34.2 44 32 44H16C13.8 44 12 42.2 12 40V22C12 17 15 14 20 13V10H19Z"/>
+      <path id="sh4" d="M24 4C30 4 33 9 33 15C33 21 29 25 26 26V42C26 43.1 25.1 44 24 44C22.9 44 22 43.1 22 42V26C19 25 15 21 15 15C15 9 18 4 24 4Z"/>
+    </svg>
+    <ol class="rail" id="rail">
         <li data-i="0"><span>Nature</span><b></b></li>
         <li data-i="1"><span>Potency</span><b></b></li>
         <li data-i="2"><span>Globules</span><b></b></li>
         <li data-i="3"><span>Sealed</span><b></b></li>
         <li data-i="4"><span>For you</span><b></b></li>
-  </ol>
+    </ol>
+  </div>
   <div class="progress"><i id="prog"></i></div>
   <div class="scroll-hint" id="hint">Scroll</div>
   <div class="stages">
@@ -381,9 +417,13 @@ html:not(.anim) .hcard{scroll-snap-align:start}
 <section class="journey" id="journey">
   <div class="jhead">
     <div><span class="kicker">Our approach</span><h2>Your journey <em>to wellness.</em></h2></div>
-    <p>Four simple steps, from your first conversation to feeling like yourself again.</p>
+    <div class="jside">
+      <p>Four simple steps, from your first conversation to feeling like yourself again.</p>
+      <div class="sbtns"><button class="sbtn" id="sPrev" aria-label="Previous step">←</button><button class="sbtn" id="sNext" aria-label="Next step">→</button></div>
+    </div>
   </div>
-  <div class="htrack" id="htrack">
+  <div class="slider" id="slider">
+    <div class="htrack" id="htrack">
       <article class="hcard">
         <div class="hcard-img"><img src="images/step1-consult.jpg" alt="Consultation" loading="lazy"></div>
         <div class="hcard-body"><span class="hnum">01</span><h3>Consultation</h3><p>An unhurried conversation about your concerns: how you feel, sleep and eat, and what makes things better or worse.</p></div>
@@ -400,8 +440,52 @@ html:not(.anim) .hcard{scroll-snap-align:start}
         <div class="hcard-img"><img src="images/step4-family.jpg" alt="Follow-up" loading="lazy"></div>
         <div class="hcard-body"><span class="hnum">04</span><h3>Follow-up</h3><p>Regular reviews to track progress and fine-tune treatment until you and your family feel well again.</p></div>
       </article>
+      <article class="hcard dup" aria-hidden="true">
+        <div class="hcard-img"><img src="images/step1-consult.jpg" alt="Consultation" loading="lazy"></div>
+        <div class="hcard-body"><span class="hnum">01</span><h3>Consultation</h3><p>An unhurried conversation about your concerns: how you feel, sleep and eat, and what makes things better or worse.</p></div>
+      </article>
+      <article class="hcard dup" aria-hidden="true">
+        <div class="hcard-img"><img src="images/step2-casestudy.jpg" alt="Case study" loading="lazy"></div>
+        <div class="hcard-body"><span class="hnum">02</span><h3>Case study</h3><p>Your symptoms, history and temperament are studied together to understand you as a whole person.</p></div>
+      </article>
+      <article class="hcard dup" aria-hidden="true">
+        <div class="hcard-img"><img src="images/step3-remedy.jpg" alt="Your remedy" loading="lazy"></div>
+        <div class="hcard-body"><span class="hnum">03</span><h3>Your remedy</h3><p>A single, individually chosen remedy in the right potency, with simple instructions on how to take it.</p></div>
+      </article>
+      <article class="hcard dup" aria-hidden="true">
+        <div class="hcard-img"><img src="images/step4-family.jpg" alt="Follow-up" loading="lazy"></div>
+        <div class="hcard-body"><span class="hnum">04</span><h3>Follow-up</h3><p>Regular reviews to track progress and fine-tune treatment until you and your family feel well again.</p></div>
+      </article>
+      <article class="hcard dup" aria-hidden="true">
+        <div class="hcard-img"><img src="images/step1-consult.jpg" alt="Consultation" loading="lazy"></div>
+        <div class="hcard-body"><span class="hnum">01</span><h3>Consultation</h3><p>An unhurried conversation about your concerns: how you feel, sleep and eat, and what makes things better or worse.</p></div>
+      </article>
+      <article class="hcard dup" aria-hidden="true">
+        <div class="hcard-img"><img src="images/step2-casestudy.jpg" alt="Case study" loading="lazy"></div>
+        <div class="hcard-body"><span class="hnum">02</span><h3>Case study</h3><p>Your symptoms, history and temperament are studied together to understand you as a whole person.</p></div>
+      </article>
+      <article class="hcard dup" aria-hidden="true">
+        <div class="hcard-img"><img src="images/step3-remedy.jpg" alt="Your remedy" loading="lazy"></div>
+        <div class="hcard-body"><span class="hnum">03</span><h3>Your remedy</h3><p>A single, individually chosen remedy in the right potency, with simple instructions on how to take it.</p></div>
+      </article>
+      <article class="hcard dup" aria-hidden="true">
+        <div class="hcard-img"><img src="images/step4-family.jpg" alt="Follow-up" loading="lazy"></div>
+        <div class="hcard-body"><span class="hnum">04</span><h3>Follow-up</h3><p>Regular reviews to track progress and fine-tune treatment until you and your family feel well again.</p></div>
+      </article>
+    </div>
   </div>
 </section>
+
+<div class="thread" id="thread" aria-hidden="true">
+  <svg id="threadSvg">
+    <defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2bf6a"/><stop offset="1" stop-color="#b8892e"/></linearGradient>
+    <radialGradient id="gb" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#f1ece0"/><stop offset="1" stop-color="#cbbf9f"/></radialGradient></defs>
+    <path id="threadBase" fill="none" stroke="rgba(201,151,58,.18)" stroke-width="1.5" stroke-dasharray="2 6"/>
+    <path id="threadLine" fill="none" stroke="url(#tg)" stroke-width="2" stroke-linecap="round"/>
+    <g id="wps"></g>
+    <g id="globule"><circle r="14" fill="rgba(226,191,106,.25)"/><circle r="7" fill="url(#gb)" stroke="rgba(184,137,46,.6)" stroke-width="1"/></g>
+  </svg>
+</div>
 
 <!-- ============ 4. TREATMENTS ============ -->
 <svg class="wave" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true" style="background:var(--g800)"><path d="M0 40c240 40 480 40 720 10s480-40 720 0v30H0z" fill="#f7f2e6"/></svg>
@@ -517,6 +601,10 @@ html:not(.anim) .hcard{scroll-snap-align:start}
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/MorphSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/MotionPathPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/Draggable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.27/dist/lenis.min.js"></script>
 <script>
 (function(){
@@ -533,7 +621,7 @@ html:not(.anim) .hcard{scroll-snap-align:start}
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(!window.gsap || !window.ScrollTrigger || reduce) return;   // static fallback: stacked stages
   document.documentElement.classList.add('anim');
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin.apply(gsap, [ScrollTrigger, window.MorphSVGPlugin, window.MotionPathPlugin, window.DrawSVGPlugin, window.Draggable].filter(Boolean));
 
   /* ---------- Lenis smooth scroll ---------- */
   var lenis = window.Lenis ? new Lenis({ lerp: 0.09, smoothWheel: true }) : null;
@@ -617,15 +705,104 @@ html:not(.anim) .hcard{scroll-snap-align:start}
       tl.fromTo(c.querySelector('h2'),{yPercent:30},{yPercent:0,duration:.55,ease:'power2.out'},inAt);
       if(k<N-1) tl.to(c,{autoAlpha:0,x:-dx*0.6,duration:.45,ease:'power2.in'},outAt);
     });
+    /* morphing stage icon: leaf → drop → globule → bottle → spoon */
+    if(window.MorphSVGPlugin){
+      for(var m=1;m<N;m++){
+        tl.to('#morph',{morphSVG:{shape:'#sh'+m,type:'rotational'},duration:.9,ease:'power2.inOut'},m*2.5-1.05);
+        tl.fromTo('.morph',{rotation:0,scale:1},{rotation:360,scale:1.15,duration:.9,ease:'power2.inOut',yoyo:false},m*2.5-1.05);
+      }
+    }
     tl.to({}, {duration:.6});     // hold the final frame
 
-    /* ---------- horizontal journey ---------- */
-    var track = $('#htrack');
-    var hx = function(){ return -(track.scrollWidth - window.innerWidth); };
-    var htl = gsap.to(track,{x:hx,ease:'none',scrollTrigger:{trigger:'#journey',start:'top top',end:function(){return '+='+(track.scrollWidth-window.innerWidth)},pin:true,scrub:0.6,invalidateOnRefresh:true,anticipatePin:1}});
-    $$('.hcard-img img').forEach(function(img){
-      gsap.to(img,{scale:1,ease:'none',scrollTrigger:{trigger:img,containerAnimation:htl,start:'left right',end:'right left',scrub:true}});
-    });
+    /* ---------- infinite card slider ---------- */
+    (function(){
+      var track=$('#htrack'), slider=$('#slider'), cardsEls=$$('#htrack .hcard');
+      var per=cardsEls.length/3, setW=0, step=0, st={x:0}, speed=38, cur=38, boost=0, hovering=false, dragging=false;
+      function measure(){ setW=cardsEls[per].offsetLeft-cardsEls[0].offsetLeft; step=cardsEls[1].offsetLeft-cardsEls[0].offsetLeft; }
+      measure(); addEventListener('resize',measure);
+      var wrap=function(v){ return gsap.utils.wrap(-setW,0,v); };
+      ScrollTrigger.create({trigger:'#journey',start:'top bottom',end:'bottom top',onUpdate:function(self){ boost=gsap.utils.clamp(-900,900,self.getVelocity()*0.35); }});
+      gsap.ticker.add(function(t,dt){
+        var target = hovering||dragging ? 0 : speed;
+        cur += (target-cur)*0.06; boost *= 0.92;
+        if(!dragging) st.x -= (cur + Math.abs(boost))*dt/1000;
+        var x=wrap(st.x); gsap.set(track,{x:x});
+        var cx=innerWidth/2;
+        for(var i=0;i<cardsEls.length;i++){
+          var r=cardsEls[i].getBoundingClientRect(), d=(r.left+r.width/2-cx)/innerWidth;
+          if(r.right<-50||r.left>innerWidth+50) continue;
+          cardsEls[i].style.transform='scale('+(1-Math.min(Math.abs(d),.6)*0.12).toFixed(3)+')';
+          var img=cardsEls[i].querySelector('img'); if(img) img.style.transform='translateX('+(d*-28).toFixed(1)+'px) scale(1.12)';
+        }
+      });
+      if(matchMedia('(hover:hover)').matches){
+        slider.addEventListener('pointerenter',function(){hovering=true}); slider.addEventListener('pointerleave',function(){hovering=false});
+      }
+      $('#sPrev').addEventListener('click',function(){ gsap.to(st,{x:'+='+step,duration:.9,ease:'power3.out'}); });
+      $('#sNext').addEventListener('click',function(){ gsap.to(st,{x:'-='+step,duration:.9,ease:'power3.out'}); });
+      if(window.Draggable){
+        var proxy=document.createElement('div'), startX=0, lastX=0, vel=0;
+        Draggable.create(proxy,{type:'x',trigger:slider,allowNativeTouchScrolling:true,
+          onPress:function(){ dragging=true; startX=st.x; lastX=this.x; gsap.killTweensOf(st); },
+          onDrag:function(){ vel=this.x-lastX; lastX=this.x; st.x=startX+(this.x-this.startX); },
+          onRelease:function(){ dragging=false; gsap.to(st,{x:'+='+(vel*12),duration:1,ease:'power3.out'}); }
+        });
+      }
+    })();
+
+    /* ---------- gold thread + travelling globule (MotionPath + DrawSVG) ---------- */
+    (function(){
+      if(!window.MotionPathPlugin || !window.DrawSVGPlugin || innerWidth<=760) return;
+      var wrapEl=$('#thread'), base=$('#threadBase'), line=$('#threadLine'), glob=$('#globule'), wpG=$('#wps');
+      wrapEl.style.display='block';
+      var mp=null, table=[], total=0, wpFr=[], y0=0, yEnd=0, smooth=0;
+      var abs=function(el){ var r=el.getBoundingClientRect(); return {x:r.left+scrollX, y:r.top+scrollY, w:r.width, h:r.height}; };
+      function build(){
+        var H=document.documentElement.scrollHeight, W=document.documentElement.clientWidth;
+        wrapEl.style.height=H+'px';
+        var L=W*0.032, Rg=W-W*0.032, bridge=abs($('.bridge')), jour=abs($('#journey')), trt=abs($('#treatments')), doc=abs($('#doctor')), btn=abs($('.cta-band .cta'));
+        var bandY=btn.y+btn.h/2, gap=90;
+        var pts=[ ['M',L,bridge.y+90] ];
+        function cross(from,to,y){ pts.push(['L',from,y-gap]); pts.push(['C',from,y,to,y,to,y+gap]); }
+        cross(L,Rg,jour.y);            // bridge → journey
+        cross(Rg,L,trt.y-40);          // journey → treatments (across the wave)
+        cross(L,Rg,doc.y);             // treatments → doctor
+        pts.push(['L',Rg,bandY-60]);
+        pts.push(['C',Rg,bandY,Rg-20,bandY,btn.x+btn.w+6,bandY]);
+        var d=pts.map(function(p){return p[0]+p.slice(1).map(function(n){return n.toFixed(1)}).join(' ')}).join(' ');
+        base.setAttribute('d',d); line.setAttribute('d',d);
+        total=base.getTotalLength(); table=[]; var v=0, prev=base.getPointAtLength(0);
+        for(var i=0;i<=600;i++){ var l=total*i/600, pt=base.getPointAtLength(l); v+=Math.abs(pt.y-prev.y)+Math.abs(pt.x-prev.x)*0.25; table.push([v,l]); prev=pt; }
+        y0=bridge.y+90; yEnd=bandY;
+        // waypoint markers at each section heading
+        wpG.innerHTML=''; wpFr=[];
+        [[L,bridge.y+bridge.h*0.42],[Rg,jour.y+jour.h*0.3],[L,trt.y+trt.h*0.25],[Rg,doc.y+doc.h*0.45]].forEach(function(w){
+          var best=0,bd=1e9; for(var i=0;i<=600;i++){ var pt=base.getPointAtLength(total*i/600), dd=Math.abs(pt.y-w[1])+Math.abs(pt.x-w[0]); if(dd<bd){bd=dd;best=i/600;} }
+          var c=document.createElementNS('http://www.w3.org/2000/svg','circle'); var pt=base.getPointAtLength(best*total);
+          c.setAttribute('cx',pt.x); c.setAttribute('cy',pt.y); c.setAttribute('r',5); c.setAttribute('class','wp'); wpG.appendChild(c); wpFr.push([best,c]);
+        });
+        if(mp) mp.kill();
+        mp=gsap.to(glob,{motionPath:{path:base,align:base,alignOrigin:[.5,.5]},duration:1,ease:'none',paused:true});
+        update(true);
+      }
+      function fracFor(){
+        var ty=scrollY+innerHeight*0.62; if(ty<=y0) return 0;
+        var vT=table[table.length-1][0], target=(ty-y0)/(yEnd-y0)*vT;
+        if(target>=vT) return 1;
+        var lo=0,hi=table.length-1; while(hi-lo>1){ var mid=(lo+hi)>>1; if(table[mid][0]<target) lo=mid; else hi=mid; }
+        return table[hi][1]/total;
+      }
+      function update(jump){
+        if(!mp) return; var f=fracFor(); smooth = jump ? f : smooth+(f-smooth)*0.12;
+        mp.progress(smooth); gsap.set(line,{drawSVG:'0% '+(smooth*100).toFixed(2)+'%'});
+        gsap.set(glob,{autoAlpha: smooth>0.002 ? 1 : 0});
+        wpFr.forEach(function(w){ w[1].classList.toggle('on', smooth>=w[0]-0.004); });
+      }
+      gsap.ticker.add(function(){ update(false); });
+      ScrollTrigger.addEventListener('refresh', build);
+      addEventListener('load', function(){ ScrollTrigger.refresh(); });
+      build();
+    })();
 
     /* ---------- reveals ---------- */
     gsap.set('.reveal',{opacity:0,y:40});

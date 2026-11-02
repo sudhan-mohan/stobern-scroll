@@ -6,6 +6,9 @@ Cinematic, scroll-driven website for **Stöbern Homöopathie** (Dr. A. Thamarai 
 - Static `index.html`, no build step
 - **GSAP 3 + ScrollTrigger**: pinned scroll story, horizontal journey, reveals
 - **Lenis**: smooth scrolling
+- **MorphSVG**: stage icon morphs leaf → drop → globule → bottle → spoon beside the progress rail
+- **MotionPath + DrawSVG**: a gold thread draws down the page margins and a globule travels along it through waypoints to the booking button (desktop only)
+- **Draggable**: infinite, auto-scrolling "Your journey" card slider (drag, arrows, pauses on hover, speeds up with scroll)
 - Fonts: Cormorant Garamond, Inter, Noto Sans Tamil
 
 ## The scroll story

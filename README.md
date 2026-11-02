@@ -20,9 +20,9 @@ A canvas pinned to the screen plays the "how a remedy is made" film as you scrol
 4. Sealed for purity: amber bottle corked
 5. Made for you: globules poured onto a spoon
 
-The film (8 s, generated in Google Veo from the 5 keyframes) is cut into WebP frames:
-- `images/seq/` — 190 frames at 1280 px for desktop (~4.2 MB)
-- `images/seq-m/` — 127 frames at 854 px for phones (~1.7 MB)
+The film (10 s, 1080p, built from the 5 keyframes with dissolves between stages) is cut into WebP frames:
+- `images/seq/` — 239 frames at 1280 px for desktop (~4.5 MB)
+- `images/seq-m/` — 159 frames at 854 px for phones (~1.8 MB)
 
 The canvas draws the frame that matches the scroll position. In `index.html`:
 - `STAGE_AT` sets where each stage sits in the film (captions, rail and morph icon follow it)
@@ -33,8 +33,6 @@ To replace the film: export new frames with
 (and `fps=16,scale=854:-2` for `seq-m`), then update the two counts in `SEQUENCE`.
 
 The keyframes in `images/stage*.jpg` remain as the no-JavaScript / reduced-motion fallback.
-
-**Note:** the film carries a small "Veo" watermark (bottom-right). To remove it, regenerate on a Veo plan that exports without the visible watermark.
 
 ## Images
 - `images/stage*.jpg`: storyboard keyframes (AI-generated in Figma, full resolution).

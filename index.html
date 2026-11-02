@@ -342,7 +342,7 @@ html:not(.anim) .hcard{scroll-snap-align:start}
         <h2>Absorbed with care<em>.</em></h2>
         <p>Tiny white sugar globules are soaked with the prepared remedy, so it is gentle and easy to take.</p>
       </div>
-      <div class="cap cap-l" data-i="3">
+      <div class="cap cap-r" data-i="3">
         <span class="cap-num">04 <i></i> Sealed</span>
         <h2>Sealed for purity<em>.</em></h2>
         <p>Remedies are kept in amber glass, which protects them from light until they reach you.</p>
@@ -618,13 +618,13 @@ html:not(.anim) .hcard{scroll-snap-align:start}
      ============================================================ */
   var MOBILE = matchMedia('(max-width:760px)').matches;
   var SEQUENCE = {
-    count: MOBILE ? 127 : 190,                                   // frames in images/seq-m / images/seq
+    count: MOBILE ? 159 : 239,                                   // frames in images/seq-m / images/seq
     src: function(i){ return (MOBILE ? 'images/seq-m/' : 'images/seq/') + String(i+1).padStart(4,'0') + '.webp'; }
   };
   /* where each of the 5 stages sits in the film (0–1) — captions, rail and morph icon follow these */
-  var STAGE_AT = [0.04, 0.33, 0.53, 0.72, 0.96];
+  var STAGE_AT = [0.06, 0.32, 0.50, 0.70, 0.95];
   /* portrait screens: horizontal focus (0–1) so the bottle stays in view when it moves right */
-  var FOCUS = [[0,.5],[.58,.5],[.656,.8],[.757,.74],[.845,.6],[.92,.55],[1,.55]];
+  var FOCUS = [[0,.5],[.78,.5],[.86,.42],[1,.45]];
 
   var $ = function(q){return document.querySelector(q)}, $$ = function(q){return Array.prototype.slice.call(document.querySelectorAll(q))};
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
